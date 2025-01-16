@@ -13,19 +13,16 @@ class Barang extends Model
         'barcode',
         'harga_jual'
     ];
-    public function purchaseDetails()
-    {
-        return $this->hasMany(DetailPembelian::class, 'barang_id');
-    }
 
-    // Relasi dengan tabel sale_details
-    public function saleDetails()
+    public function DetailPenjualan()
     {
         return $this->hasMany(DetailPenjualan::class, 'barang_id');
     }
-
-    // Relasi dengan tabel stock
-    public function stock()
+    public function DetailPembelian()
+    {
+        return $this->hasMany(DetailPembelian::class, 'barang_id');
+    }
+    public function Stok()
     {
         return $this->hasOne(Stok::class, 'barang_id');
     }

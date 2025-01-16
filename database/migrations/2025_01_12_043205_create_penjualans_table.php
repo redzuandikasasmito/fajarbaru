@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('penjualans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users');
+            $table->decimal('total_penjualan', 10, 2);
+            $table->timestamp('tanggal');
             $table->timestamps();
         });
     }

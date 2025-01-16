@@ -27,3 +27,4 @@ return new class extends Migration
         Schema::dropIfExists('stoks');
     }
 };
+// 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

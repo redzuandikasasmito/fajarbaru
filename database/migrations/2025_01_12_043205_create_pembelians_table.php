@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pembelian', function (Blueprint $table) {
+        Schema::create('pembelians', function (Blueprint $table) {
             $table->id();
-            $table->decimal('total_amount', 10, 2);
+            $table->decimal('total_pembelian', 10, 2);
             $table->timestamp('tanggal');
             $table->timestamps();
         });
