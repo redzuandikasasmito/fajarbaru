@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('pembelians')) {
+            Schema::dropIfExists('pembelians');
+        }
         Schema::create('pembelians', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('supplier_id')->constrained('suppliers');
             $table->decimal('total_pembelian', 10, 2);
+            $table->enum('status_pembayaran', ['cash', 'credit'])->default('cash');
             $table->timestamp('tanggal');
             $table->timestamps();
         });

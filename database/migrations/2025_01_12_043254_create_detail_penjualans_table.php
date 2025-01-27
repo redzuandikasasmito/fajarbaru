@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('detail_penjualans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('penjualan_id')->constrained('penjualans');
+            $table->foreignId('penjualan_id')->constrained('penjualans')->onDelete('cascade');
             $table->foreignId('barang_id')->constrained('barangs');
             $table->integer('quantity');
-            $table->decimal('harga_akhir', 10, 2)->nullable();
+            $table->decimal('harga_jual', 10, 2);
+            $table->decimal('subtotal', 10, 2);
             $table->timestamps();
         });
     }

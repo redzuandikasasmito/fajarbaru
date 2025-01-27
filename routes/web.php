@@ -4,26 +4,46 @@ use App\Http\Controllers\BarangController;
 use App\Models\Barang;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StokController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SalesController;
+use App\Http\Controllers\PenjualanController;
 
 Route::get('/', function () {
+    return view('index');
+});
+
+
+// Route for Barang
+Route::get('/dashboard', function () {
     return view('dashboard');
 });
 
-// Route for Barang
-Route::get('/barang', function () {
-    $barangs = Barang::all();
-    return view('admin.barang', compact('barangs'));
+Route::get('/penjualan', function () {
+    return view('pages.transaksi.penjualan');
 });
+
+Route::get('/barang-data', function () {
+    return view('pages.data.data_barang');
+});
+
 
 
 //Route Barang
 Route::resource('barang', BarangController::class);
-Route::put('/barang/{barang}', [BarangController::class, 'updateBarang'])
-    ->name('barang.updateBarang');
+Route::get('/api/barang/search', [BarangController::class, 'search'])->name('barang.search');
 
-// Stok Routes
-Route::resource('stok', StokController::class);
+//Route Stok
+Route::resource('stok', StokController::class)->except(['create', 'show', 'destroy']);
+Route::get('/api/stok/search', [StokController::class, 'search'])->name('stok.search');
 
-// Custom route for updating quantity
-Route::put('/stok/{stok}/quantity', [StokController::class, 'updateQuantity'])
-    ->name('stok.updateQuantity');
+// routes/web.php
+Route::resource('customer', CustomerController::class);
+Route::get('/api/customer/search', [CustomerController::class, 'search'])->name('customer.search');
+
+// routes/web.php
+Route::resource('sales', SalesController::class);
+Route::get('/api/sales/search', [SalesController::class, 'search'])->name('sales.search');
+
+Route::resource('penjualan', PenjualanController::class);
+Route::get('/api/penjualan/search-barang', [PenjualanController::class, 'searchBarang'])
+    ->name('penjualan.search-barang');
