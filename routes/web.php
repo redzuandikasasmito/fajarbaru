@@ -7,9 +7,11 @@ use App\Http\Controllers\StokController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\PembelianController;
+use App\Http\Controllers\SupplierController;
 
 Route::get('/', function () {
-    return view('index');
+    return view('dashboard');
 });
 
 
@@ -47,3 +49,12 @@ Route::get('/api/sales/search', [SalesController::class, 'search'])->name('sales
 Route::resource('penjualan', PenjualanController::class);
 Route::get('/api/penjualan/search-barang', [PenjualanController::class, 'searchBarang'])
     ->name('penjualan.search-barang');
+
+
+// routes/web.php
+Route::resource('supplier', SupplierController::class);
+Route::get('/api/supplier/search', [SupplierController::class, 'search'])->name('supplier.search');
+
+
+Route::resource('pembelian', PembelianController::class);
+Route::post('/pembelian/store-barang', [PembelianController::class, 'storeBarang'])->name('pembelian.store-barang');

@@ -138,11 +138,15 @@
                                 <td>{{ $barang->stok->quantity ?? 0 }}</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="{{ route('barang.edit', $barang->id) }}" 
+                                        {{-- <a href="{{ route('barang.edit', $barang->id) }}" 
                                             class="btn btn-sm btn-info text-white">
                                             <i class='bx bx-pencil text-xl' ></i>
                                             Edit
-                                        </a>
+                                        </a> --}}
+                                        <button class="btn btn-sm btn-info text-white" onclick="my_modal_1.showModal()">
+                                            <i class='bx bx-pencil text-xl' ></i>
+                                        </button>
+                                        
                                         <form action="{{ route('barang.destroy', $barang->id) }}" 
                                             method="POST" 
                                             onsubmit="return confirm('Yakin ingin menghapus barang ini?')"
@@ -168,6 +172,20 @@
                 </table>
             </div>
 
+            <!-- Open the modal using ID.showModal() method -->
+
+<dialog id="my_modal_1" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Hello!</h3>
+    <p class="py-4">Press ESC key or click the button below to close</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button in form, it will close the modal -->
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
             <!-- Pagination -->
             <div class="mt-4">
                 {{ $barangs->links() }}
