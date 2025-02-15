@@ -58,3 +58,12 @@ Route::get('/api/supplier/search', [SupplierController::class, 'search'])->name(
 
 Route::resource('pembelian', PembelianController::class);
 Route::post('/pembelian/store-barang', [PembelianController::class, 'storeBarang'])->name('pembelian.store-barang');
+
+
+
+
+Route::get('/penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
+Route::post('/penjualan/add-item', [PenjualanController::class, 'addItem'])->name('penjualan.add-item');
+Route::post('/penjualan/update-item', [PenjualanController::class, 'updateItem'])->name('penjualan.update-item');
+Route::post('/penjualan/remove-item', [PenjualanController::class, 'removeItem'])->name('penjualan.remove-item');
+

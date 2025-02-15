@@ -18,14 +18,18 @@ class CustomerController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'telepon' => 'required|string|max:15',
-            'alamat' => 'required|string'
+            'alamat' => 'required|string',
         ]);
-
-        Customer::create($request->all());
-
-        return redirect()->route('customer.index')
-            ->with('success', 'Customer berhasil ditambahkan');
+    
+        Customer::create([
+            'nama' => $request->nama,
+            'telepon' => $request->telepon,
+            'alamat' => $request->alamat,
+        ]);
+    
+        return redirect()->back()->with('success', 'Customer berhasil ditambahkan!');
     }
+    
 
     public function search(Request $request)
     {

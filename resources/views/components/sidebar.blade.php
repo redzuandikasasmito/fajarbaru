@@ -25,13 +25,13 @@ x<div class="drawer-side">
                 <div class="divider divider-start"><span class="justify-start">Transaksi</span> </div>
                 
                 <li>
-                    <a href="{{ route('penjualan.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg">
+                    <a href="{{ route('penjualan.index') }}" class="flex items-center gap-3 p-3  text-primary rounded-lg  {{ Request::routeIs('penjualan.*') ? 'bg-gray-200 font-bold' : '' }}">
                         <i class='bx bx-cart-add text-xl'></i>
                         <span>Penjualan</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('pembelian.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg">
+                    <a href="{{ route('pembelian.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg {{ Request::routeIs('pembelian.*') ? 'bg-gray-200 font-bold' : '' }}">
                         <i class='bx bx-cart-download text-xl'></i>
                         <span>Pembelian</span>
                     </a>
@@ -41,19 +41,19 @@ x<div class="drawer-side">
                 <!-- Data -->
                 <div class="divider divider-start"><span class="">Data</span> </div>
                 <li>
-                    <a href="{{ route('barang.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg">
+                    <a href="{{ route('barang.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg {{ Request::routeIs('barang.*') ? 'bg-gray-200 font-bold' : '' }}">
                         <i class='bx bx-box text-xl'></i>
                         <span>Data Barang</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('sales.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg">
+                    <a href="{{ route('sales.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg {{ Request::routeIs('sales.*') ? 'bg-gray-200 font-bold' : '' }}">
                         <i class='bx bx-user text-xl'></i>
                         <span>Data Sales</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('customer.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg">
+                    <a href="{{ route('customer.index') }}" class="flex items-center gap-3 p-3 text-primary rounded-lg {{ Request::routeIs('customer.*') ? 'bg-gray-200 font-bold' : '' }}">
                         <i class='bx bx-group text-xl'></i>
                         <span>Data Customer</span>
                     </a>

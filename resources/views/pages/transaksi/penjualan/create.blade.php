@@ -15,7 +15,58 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title text-lg mb-4">Informasi Penjualan</h2>
+                    <div class="grid grid-cols-2 md: grid-cols-1 gap-3">
+                        <button class="btn btn-primary" id="modalCustomer" onclick="modal_customer.showModal()" >Tambah Customer</button>
+                        <button class="btn btn-primary" id ="modalSales">Tambah Customer</button>
+                    </div>
+
+                    {{-- Modal Customer --}}
+
+                    <dialog id="modal_customer" class="modal">
+                        <div class="modal-box">
+                            <h3 class="text-lg font-bold">Tambah Customer</h3>
+                            
+                            <form id="form_tambah_customer" action="{{route('customer.store')}}" method="POST">
+                                <!-- Nama -->
+                                @csrf
+                                <label class="form-control w-full">
+                                    <div class="label">
+                                        <span class="label-text">Nama Customer</span>
+                                    </div>
+                                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama" class="input input-bordered w-full" required />
+                                </label>
                     
+                                <!-- Telepon -->
+                                <label class="form-control w-full mt-3">
+                                    <div class="label">
+                                        <span class="label-text">Telepon</span>
+                                    </div>
+                                    <input type="tel" id="telepon" name="telepon" placeholder="Masukkan nomor telepon" class="input input-bordered w-full" required />
+                                </label>
+                    
+                                <!-- Alamat -->
+                                <label class="form-control w-full mt-3">
+                                    <div class="label">
+                                        <span class="label-text">Alamat</span>
+                                    </div>
+                                    <textarea id="alamat" name="alamat" placeholder="Masukkan alamat" class="textarea textarea-bordered w-full" required></textarea>
+                                </label>
+                               
+                                <div class="modal-action">
+                                    <!-- Tombol Simpan -->
+                                    
+                                    <!-- Tombol Close -->
+                                    <button type="button" class="btn" onclick="document.getElementById('modal_customer').close();">Tutup</button>
+                                </div>
+                                <button type="submit"  class="btn btn-primary">Simpan</button>
+                            </form>
+                        </div>
+                    </dialog>
+                    
+                    <!-- Tombol untuk membuka modal -->
+ 
+                                       
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Customer -->
                         <div class="form-control">
@@ -29,7 +80,7 @@
                                 @endforeach
                             </select>
                         </div>
-
+                       
                         <!-- Sales -->
                         <div class="form-control">
                             <label class="label">
@@ -338,6 +389,24 @@ $('#formPenjualan').on('submit', function(e) {
     }
 
     return confirm('Apakah data sudah benar?');
+});
+
+$('#form_customer').on('submit', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: "{{ route('customer.store') }}",
+        type: "POST",
+        data: $(this).serialize(),
+        success: function(response) {
+            alert(response.success);
+            document.getElementById('modal_customer').close();
+            location.reload(); // Refresh untuk update daftar customer
+        },
+        error: function(xhr) {
+            alert("Terjadi kesalahan!");
+        }
+    });
 });
 </script>
 
