@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Sales;
 use Illuminate\Http\Request;
 
@@ -26,6 +27,24 @@ class SalesController extends Controller
 
         return redirect()->route('sales.index')
             ->with('success', 'Sales berhasil ditambahkan');
+    }
+
+    public function simpan(Request $request)
+    {
+        $data = $request->validate([
+            'nama' => 'required',
+            'telepon' => 'required',
+            'alamat' => 'required',
+            'status' => 'required'
+        ]);
+
+        $sales = Sales::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sales Berhasil Ditambahkan',
+            'data' => $sales
+        ]);
     }
 
     public function search(Request $request)

@@ -9,6 +9,7 @@ use App\Http\Controllers\SalesController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PenjualanExtController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -40,10 +41,12 @@ Route::get('/api/stok/search', [StokController::class, 'search'])->name('stok.se
 
 // routes/web.php
 Route::resource('customer', CustomerController::class);
+Route::post('/customer/simpan', [CustomerController::class, 'simpan'])->name('customer.simpan');
 Route::get('/api/customer/search', [CustomerController::class, 'search'])->name('customer.search');
 
 // routes/web.php
 Route::resource('sales', SalesController::class);
+Route::post('sales/simpan', [SalesController::class, 'simpan'])->name('sales.simpan');
 Route::get('/api/sales/search', [SalesController::class, 'search'])->name('sales.search');
 
 Route::resource('penjualan', PenjualanController::class);
@@ -67,3 +70,14 @@ Route::post('/penjualan/add-item', [PenjualanController::class, 'addItem'])->nam
 Route::post('/penjualan/update-item', [PenjualanController::class, 'updateItem'])->name('penjualan.update-item');
 Route::post('/penjualan/remove-item', [PenjualanController::class, 'removeItem'])->name('penjualan.remove-item');
 
+
+
+
+
+Route::prefix('penjualan-ext')->group(function () {
+    Route::get('/create', [PenjualanExtController::class, 'create'])->name('penjualan_ext.create');
+    Route::post('/store', [PenjualanExtController::class, 'store'])->name('penjualan_ext.store');
+    Route::post('/add-item', [PenjualanExtController::class, 'addItem'])->name('penjualan_ext.add-item');
+    Route::post('/remove-item/{index}', [PenjualanExtController::class, 'removeItem'])->name('penjualan_ext.remove-item');
+    Route::post('/update-quantity', [PenjualanExtController::class, 'updateQuantity'])->name('penjualan_ext.update-quantity');
+});

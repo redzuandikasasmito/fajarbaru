@@ -20,16 +20,32 @@ class CustomerController extends Controller
             'telepon' => 'required|string|max:15',
             'alamat' => 'required|string',
         ]);
-    
+
         Customer::create([
             'nama' => $request->nama,
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
         ]);
-    
-        return redirect()->back()->with('success', 'Customer berhasil ditambahkan!');
+
+        return redirect()->back()->with('response', 'Customer berhasil ditambahkan!');
     }
-    
+
+    public function simpan(Request $request)
+    {
+        $data = $request->validate([
+            'nama' => 'required',
+            'telepon' => 'required',
+            'alamat' => 'required',
+        ]);
+
+        $customer = Customer::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer berhasil ditambahkan!',
+            'data' => $customer
+        ]);
+    }
 
     public function search(Request $request)
     {

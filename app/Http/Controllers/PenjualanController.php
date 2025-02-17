@@ -41,17 +41,19 @@ class PenjualanController extends Controller
     public function store(Request $request)
     {
         $requestValidated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'sales_id' => 'required|exists:sales,id',
-            'status_pembayaran' => 'required|in:0,1',
-            'items' => 'required|array|min:1',
-            'items.*.barang_id' => 'required|exists:barangs,id',
+            'customer_id' => 'required',
+            'sales_id' => 'required',
+            'status_pembayaran' => 'required',
+            'items' => 'required|array',
+            'items.*.barang_id' => 'required',
             'items.*.quantity' => 'required|integer|min:1',
-            'items.*.harga_jual' => 'required|numeric|min:0'
+            'dp' => 'nullable|numeric|min:0', // DP harus angka dan minimal 0
         ]);
 
         try {
-            // Memisahkan data untuk tabel `penjualans`
+            DB::beginTransaction();
+
+            // Data untuk `penjualans`
             $penjualanData = [
                 'customer_id' => $requestValidated['customer_id'],
                 'sales_id' => $requestValidated['sales_id'],
@@ -60,48 +62,93 @@ class PenjualanController extends Controller
                 'tanggal' => now(),
             ];
 
-            // Memisahkan data untuk tabel `detail_penjualans`
-            $detailPenjualanData = $requestValidated['items']; // Semua item langsung dipakai
-
-            DB::beginTransaction();
-
-            // Input ke tabel `penjualans` dan mendapatkan ID
+            // Simpan ke tabel `penjualans`
             $penjualanId = DB::table('penjualans')->insertGetId($penjualanData);
 
             $total = 0;
 
-            // Iterasi untuk input ke tabel `detail_penjualans`
-            foreach ($detailPenjualanData as $item) {
-                $subtotal = $item['quantity'] * $item['harga_jual'];
+            // Iterasi setiap item
+            foreach ($requestValidated['items'] as $item) {
+                // Ambil harga jual
+                $barang = DB::table('barangs')->where('id', $item['barang_id'])->first();
+                if (!$barang) {
+                    throw new \Exception('Barang tidak ditemukan.');
+                }
+
+                $hargaJual = $barang->harga_jual;
+                $subtotal = $item['quantity'] * $hargaJual;
                 $total += $subtotal;
 
+                // Simpan ke `detail_penjualans`
                 DB::table('detail_penjualans')->insert([
                     'penjualan_id' => $penjualanId,
                     'barang_id' => $item['barang_id'],
                     'quantity' => $item['quantity'],
-                    'harga_jual' => $item['harga_jual'],
+                    'harga_jual' => $hargaJual,
                     'subtotal' => $subtotal,
                 ]);
 
-                // Mengurangi stok barang
+                // Cek stok sebelum mengurangi
+                $stok = DB::table('stoks')->where('barang_id', $item['barang_id'])->value('quantity');
+                if ($stok < $item['quantity']) {
+                    throw new \Exception('Stok barang tidak mencukupi.');
+                }
+
+                // Kurangi stok
                 DB::table('stoks')
                     ->where('barang_id', $item['barang_id'])
                     ->decrement('quantity', $item['quantity']);
             }
 
-            // Update total penjualan
+            // Update total di `penjualans`
             DB::table('penjualans')
                 ->where('id', $penjualanId)
                 ->update(['total_penjualan' => $total]);
 
+            // Jika status pembayaran adalah 'kredit', buat piutang
+            if ($requestValidated['status_pembayaran'] == '1') {
+                $jatuhTempo = now()->addMonth(); // Jatuh tempo 1 bulan setelah penjualan
+
+                // Hitung total piutang setelah dikurangi DP
+                $totalPiutang = $total - ($requestValidated['dp'] ?? 0);
+
+                DB::table('piutangs')->insert([
+                    'penjualan_id' => $penjualanId,
+                    'customer_id' => $requestValidated['customer_id'],
+                    'total_piutang' => $totalPiutang,
+                    'jatuh_tempo' => $jatuhTempo,
+                    'dp' => $requestValidated['dp'] ?? 0,
+                    'status' => 'belum lunas',
+                ]);
+            }
+
             DB::commit();
 
-            return redirect()->route('penjualan.index')->with('success', 'Data berhasil disimpan.');
+            // Response JSON sukses
+            return response()->json([
+                'success' => true,
+                'code' => 200,
+                'message' => 'Data penjualan berhasil disimpan.',
+                'data' => [
+                    'penjualan_id' => $penjualanId,
+                    'total_penjualan' => $total
+                ]
+            ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+
+            // Response JSON error
+            return response()->json([
+                'success' => false,
+                'code' => 500,
+                'message' => 'Terjadi kesalahan pada server.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
+
+
+
 
 
     public function searchBarang(Request $request)

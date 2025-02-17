@@ -1,4 +1,3 @@
-<!-- resources/views/penjualan/create.blade.php -->
 @extends('../layout/app')
 
 @section('page-title', 'Tambah Penjualan')
@@ -15,58 +14,6 @@
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
                     <h2 class="card-title text-lg mb-4">Informasi Penjualan</h2>
-                    <div class="grid grid-cols-2 md: grid-cols-1 gap-3">
-                        <button class="btn btn-primary" id="modalCustomer" onclick="modal_customer.showModal()" >Tambah Customer</button>
-                        <button class="btn btn-primary" id ="modalSales">Tambah Customer</button>
-                    </div>
-
-                    {{-- Modal Customer --}}
-
-                    <dialog id="modal_customer" class="modal">
-                        <div class="modal-box">
-                            <h3 class="text-lg font-bold">Tambah Customer</h3>
-                            
-                            <form id="form_tambah_customer" action="{{route('customer.store')}}" method="POST">
-                                <!-- Nama -->
-                                @csrf
-                                <label class="form-control w-full">
-                                    <div class="label">
-                                        <span class="label-text">Nama Customer</span>
-                                    </div>
-                                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama" class="input input-bordered w-full" required />
-                                </label>
-                    
-                                <!-- Telepon -->
-                                <label class="form-control w-full mt-3">
-                                    <div class="label">
-                                        <span class="label-text">Telepon</span>
-                                    </div>
-                                    <input type="tel" id="telepon" name="telepon" placeholder="Masukkan nomor telepon" class="input input-bordered w-full" required />
-                                </label>
-                    
-                                <!-- Alamat -->
-                                <label class="form-control w-full mt-3">
-                                    <div class="label">
-                                        <span class="label-text">Alamat</span>
-                                    </div>
-                                    <textarea id="alamat" name="alamat" placeholder="Masukkan alamat" class="textarea textarea-bordered w-full" required></textarea>
-                                </label>
-                               
-                                <div class="modal-action">
-                                    <!-- Tombol Simpan -->
-                                    
-                                    <!-- Tombol Close -->
-                                    <button type="button" class="btn" onclick="document.getElementById('modal_customer').close();">Tutup</button>
-                                </div>
-                                <button type="submit"  class="btn btn-primary">Simpan</button>
-                            </form>
-                        </div>
-                    </dialog>
-                    
-                    <!-- Tombol untuk membuka modal -->
- 
-                                       
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Customer -->
                         <div class="form-control">
@@ -79,8 +26,12 @@
                                     <option value="{{ $customer->id }}">{{ $customer->nama }}</option>
                                 @endforeach
                             </select>
+                            <div class="label">
+                                <span class="label-text-alt"><button type="button" class="btn btn-primary" onclick="modal_customer.showModal()">Tambah Customer</button>
+                                </span>
+                            </div>
                         </div>
-                       
+                    
                         <!-- Sales -->
                         <div class="form-control">
                             <label class="label">
@@ -92,18 +43,30 @@
                                     <option value="{{ $item->id }}">{{ $item->nama }}</option>
                                 @endforeach
                             </select>
+                            <div class="label">
+                                <span class="label-text-alt"><button type="button" class="btn btn-primary" onclick="modal_sales.showModal()">Tambah Sales</button></span>
+                            </div>
                         </div>
 
                         <!-- Status Pembayaran -->
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">Status Pembayaran</span>
-                            </label>
-                            <select name="status_pembayaran" class="select select-bordered" required>
+                        <label class="form-control w-full mt-3">
+                            <div class="label">
+                                <span class="label-text">Pilih Metode Pembayaran</span>
+                            </div>
+                            <select id="paymentMethod" name="status_pembayaran" class="select select-bordered w-full" onchange="toggleDPInput()">
                                 <option value="0">Cash</option>
                                 <option value="1">Kredit</option>
                             </select>
-                        </div>
+                        </label>
+                        
+                        <!-- Input DP (disembunyikan saat awal) -->
+                        <label class="form-control w-full mt-3" id="dpInput" style="display: none;">
+                            <div class="label">
+                                <span class="label-text">Down Payment (DP)</span>
+                            </div>
+                            <input type="number" name="dp" placeholder="Masukkan jumlah DP" class="input input-bordered w-full" step="0.01" min="0" />
+                        </label>
+                        
                     </div>
                 </div>
             </div>
@@ -162,53 +125,137 @@
             </div>
         </div>
     </form>
-</div>
 
-<!-- Modal Cari Barang -->
-<dialog id="modalCariBarang" class="modal">
-    <div class="modal-box w-11/12 max-w-5xl">
-        <h3 class="font-bold text-lg mb-4">Cari Barang</h3>
-        
-        <div class="form-control mb-4">
-            <div class="input-group">
-                <input type="text" id="searchBarangInput" 
-                    class="input input-bordered w-full"
-                    placeholder="Ketik nama atau barcode...">
-                <button class="btn btn-square" id="btnSearch">
-                    <i class='bx bx-search text-xl'></i>
-                </button>
-            </div>
-        </div>
+    {{-- Modal Customer --}}
+    <dialog id="modal_customer" class="modal">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">Tambah Customer</h3>
+            
+            <form id="form_tambah_customer" method="POST">
+                @csrf
+                <label class="form-control w-full">
+                    <div class="label">
+                        <span class="label-text">Nama Customer</span>
+                    </div>
+                    <input type="text" name="nama" placeholder="Masukkan nama" class="input input-bordered w-full" required />
+                </label>
 
-        <div class="overflow-x-auto">
-            <table class="table table-zebra w-full">
-                <thead>
-                    <tr>
-                        <th>Nama Barang</th>
-                        <th>Barcode</th>
-                        <th>Harga</th>
-                        <th>Stok</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="searchResults">
-                    <tr>
-                        <td colspan="5" class="text-center py-4">
-                            Ketik untuk mencari barang
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <label class="form-control w-full mt-3">
+                    <div class="label">
+                        <span class="label-text">Telepon</span>
+                    </div>
+                    <input type="tel" name="telepon" placeholder="Masukkan nomor telepon" class="input input-bordered w-full" required />
+                </label>
 
-        <div class="modal-action">
-            <form method="dialog">
-                <button class="btn">Tutup</button>
+                <label class="form-control w-full mt-3">
+                    <div class="label">
+                        <span class="label-text">Alamat</span>
+                    </div>
+                    <textarea name="alamat" placeholder="Masukkan alamat" class="textarea textarea-bordered w-full" required></textarea>
+                </label>
+
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="button" class="btn" onclick="modal_customer.close()">Tutup</button>
+                </div>
             </form>
         </div>
-    </div>
-</dialog>
+    </dialog>
 
+    {{-- Modal Sales --}}
+    <dialog id="modal_sales" class="modal">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">Tambah Sales</h3>
+            
+            <form id="form_tambah_sales" method="POST">
+                @csrf
+                <label class="form-control w-full">
+                    <div class="label">
+                        <span class="label-text">Nama Sales</span>
+                    </div>
+                    <input type="text" name="nama" placeholder="Masukkan nama" class="input input-bordered w-full" required />
+                    
+                </label>
+    
+                <label class="form-control w-full mt-3">
+                    <div class="label">
+                        <span class="label-text">Telepon</span>
+                    </div>
+                    <input type="tel" name="telepon" placeholder="Masukkan nomor telepon" class="input input-bordered w-full" required />
+                </label>
+    
+                <label class="form-control w-full mt-3">
+                    <div class="label">
+                        <span class="label-text">Alamat</span>
+                    </div>
+                    <textarea name="alamat" placeholder="Masukkan alamat" class="textarea textarea-bordered w-full" required></textarea>
+                </label>
+    
+                <!-- Tambahkan Pilihan Aktif/Tidak Aktif -->
+                <label class="form-control w-full mt-3">
+                    <div class="label">
+                        <span class="label-text">Status</span>
+                    </div>
+                    <select name="status" class="select select-bordered w-full" required>
+                        <option value="aktif">Aktif</option>
+                        <option value="tidak_aktif">Tidak Aktif</option>
+                    </select>
+                </label>
+    
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="button" class="btn" onclick="modal_sales.close()">Tutup</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+    
+
+    <!-- Modal Cari Barang -->
+    <dialog id="modalCariBarang" class="modal">
+        <div class="modal-box w-11/12 max-w-5xl">
+            <h3 class="font-bold text-lg mb-4">Cari Barang</h3>
+            
+            <div class="form-control mb-4">
+                <div class="input-group">
+                    <input type="text" id="searchBarangInput" 
+                        class="input input-bordered w-full"
+                        placeholder="Ketik nama atau barcode...">
+                    <button class="btn btn-square" id="btnSearch">
+                        <i class='bx bx-search text-xl'></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>Nama Barang</th>
+                            <th>Barcode</th>
+                            <th>Harga</th>
+                            <th>Stok</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="searchResults">
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                Ketik untuk mencari barang
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-action">
+                <form method="dialog">
+                    <button class="btn">Tutup</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+</div>
 
 <script>
 let items = [];
@@ -218,12 +265,28 @@ function searchBarang() {
     document.getElementById('modalCariBarang').showModal();
 }
 
+function toggleDPInput() {
+    let paymentMethod = document.getElementById("paymentMethod").value;
+    let dpInput = document.getElementById("dpInput");
+
+    if (paymentMethod === "1") {
+        dpInput.style.display = "block"; // Tampilkan jika pilih Kredit
+    } else {
+        dpInput.style.display = "none"; // Sembunyikan jika pilih Cash
+    }
+}
+
+$(document).ready(function() {
+        $('#customer_id).select2({
+            placeholder: "Pilih Customer",
+            allowClear: true
+        });
+    });
+
 $('#searchBarangInput').on('keyup', function() {
     clearTimeout(searchTimer);
     const searchTerm = $(this).val();
-    
     $('#btnSearch').html('<span class="loading loading-spinner loading-sm"></span>');
-
     searchTimer = setTimeout(function() {
         $.ajax({
             url: "{{ route('penjualan.search-barang') }}",
@@ -325,15 +388,6 @@ function updateTable() {
                             onchange="updateQuantity(${index}, this.value)">
                         <input type="hidden" name="items[${index}][barang_id]" value="${item.barang_id}">
                         <input type="hidden" name="items[${index}][quantity]" value="${item.quantity}">
-                        <td>
-    <input type="number" 
-           class="input input-bordered w-24"
-           name="items[${index}][harga_jual]"
-           value="${item.harga_jual}"
-           min="${item.harga_pokok}"  
-           onchange="updateHargaJual(${index}, this.value)">
-</td>
-                        <input type="hidden" name="items[${index}][harga_jual]" value="${item.harga_jual}">
                     </td>
                     <td>Rp ${new Intl.NumberFormat('id-ID').format(item.harga_jual)}</td>
                     <td>Rp ${new Intl.NumberFormat('id-ID').format(item.harga_jual * item.quantity)}</td>
@@ -373,6 +427,7 @@ function updateTotal() {
     const total = items.reduce((acc, item) => acc + (item.harga_jual * item.quantity), 0);
     $('#totalPenjualan').text(`Rp ${new Intl.NumberFormat('id-ID').format(total)}`);
 }
+
 // Validasi form sebelum submit
 $('#formPenjualan').on('submit', function(e) {
     if(items.length === 0) {
@@ -391,23 +446,75 @@ $('#formPenjualan').on('submit', function(e) {
     return confirm('Apakah data sudah benar?');
 });
 
-$('#form_customer').on('submit', function(e) {
+// Handle Customer Form Submission
+$('#form_tambah_customer').on('submit', function(e) {
     e.preventDefault();
-
+    
     $.ajax({
-        url: "{{ route('customer.store') }}",
+        url: "{{ route('customer.simpan') }}",
+        type: "POST",
+        data: $(this).serialize(),
+        dataType: "json", // Tambahkan ini agar respons terbaca sebagai JSON
+        success: function(response) {
+            if(response.success) {
+                // Tambahkan customer ke select dropdown
+                $('select[name="customer_id"]').append(
+                    `<option value="${response.data.id}">${response.data.nama}</option>`
+                );
+                
+                // Reset form dan tutup modal
+                $('#form_tambah_customer')[0].reset();
+                modal_customer.close();
+                
+                // Tampilkan pesan sukses
+                // alert(response.message);
+                Swal.fire({
+            title: "Berhasil",
+            text: response.message,
+            icon: "success"
+            }); // Menggunakan message dari JSON
+            }
+        },
+        error: function(xhr) {
+            alert('Terjadi kesalahan saat menambahkan customer!');
+            console.error(xhr);
+        }
+    });
+});
+
+
+// Handle Sales Form Submission
+$('#form_tambah_sales').on('submit', function(e) {
+    e.preventDefault();
+    
+    $.ajax({
+        url: "{{ route('sales.simpan') }}",
         type: "POST",
         data: $(this).serialize(),
         success: function(response) {
-            alert(response.success);
-            document.getElementById('modal_customer').close();
-            location.reload(); // Refresh untuk update daftar customer
+            if(response.success) {
+                // Add new sales to select dropdown
+                $('select[name="sales_id"]').append(
+                    `<option value="${response.data.id}">${response.data.nama}</option>`
+                );
+                
+                // Reset form and close modal
+                $('#form_tambah_sales')[0].reset();
+                modal_sales.close();
+                
+                // Show success message
+                Swal.fire({
+            title: "Berhasil",
+            text: response.message,
+            icon: "success"
+            });
+            }
         },
         error: function(xhr) {
-            alert("Terjadi kesalahan!");
+            alert('Terjadi kesalahan saat menambahkan sales!');
+            console.error(xhr);
         }
     });
 });
 </script>
-
 @endsection
