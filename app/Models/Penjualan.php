@@ -2,18 +2,39 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Testing\Fluent\Concerns\Has;
 
 class Penjualan extends Model
 {
-    //
+    use HasFactory;
     protected $table = 'penjualans';
+
     protected $fillable = [
-        'tanggal',
-        'total_harga'
+        'customer_id',
+        'sales_id',
+        'total_penjualan',
+        'status_pembayaran',
+        'tanggal'
     ];
-    public function DetailPenjualan()
+
+    protected $casts = [
+        'tanggal' => 'datetime'
+    ];
+
+    public function customer()
     {
-        return $this->hasMany(DetailPenjualan::class, 'penjualan_id');
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function sales()
+    {
+        return $this->belongsTo(Sales::class);
+    }
+
+    public function details()
+    {
+        return $this->hasMany(DetailPenjualan::class);
     }
 }

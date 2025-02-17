@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('penjualans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('customer_id')->constrained('customers');
+            $table->foreignId('sales_id')->constrained('sales');
             $table->decimal('total_penjualan', 10, 2);
+            $table->enum('status_pembayaran', ['cash', 'kredit'])->default('cash');
             $table->timestamp('tanggal');
             $table->timestamps();
         });
